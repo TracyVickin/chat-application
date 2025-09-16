@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
 import swaggerUi from 'swagger-ui-express';
 import * as swaggerDocument from './swagger.json'; // We'll create this later
@@ -6,6 +7,13 @@ import z from 'zod';
 
 const app = express();
 const prisma = new PrismaClient();
+
+// Enable CORS for all routes
+app.use(cors({
+  origin: 'http://localhost:3000', // Frontend URL
+  credentials: true
+}));
+
 app.use(express.json());
 
 // Swagger setup
