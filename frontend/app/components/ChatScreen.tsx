@@ -12,20 +12,24 @@ interface Message {
 }
 
 interface ChatScreenProps {
-  convoId: string;
+  convoId: string | null;
+  isLoadingConversations?: boolean;
 }
 
-export default function ChatScreen({ convoId }: ChatScreenProps) {
+export default function ChatScreen({ convoId, isLoadingConversations = false }: ChatScreenProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [disabled, setDisabled] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (convoId) {
       fetchMessages();
+    } else {
+      setMessages([]);
+      setLoading(false);
     }
   }, [convoId]);
 
@@ -43,20 +47,21 @@ export default function ChatScreen({ convoId }: ChatScreenProps) {
   };
 
   const sendMessage = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || !convoId) return;
     setDisabled(true);
     try {
       await axios.post('http://localhost:3001/messages', { content: input, conversationId: convoId });
       setInput('');
       fetchMessages();
       setIsTyping(true);
+      
+      // Simulate bot response
       setTimeout(() => {
         setIsTyping(false);
-        fetchMessages();
-        setDisabled(false);
       }, 2000);
     } catch (error) {
       console.error('Error sending message:', error);
+    } finally {
       setDisabled(false);
     }
   };
@@ -65,10 +70,9 @@ export default function ChatScreen({ convoId }: ChatScreenProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const formatTime = (dateString?: string) => {
-    if (!dateString) return '';
+  const formatTime = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleString('en-US', { 
+    return date.toLocaleDateString('en-US', { 
       month: 'short', 
       day: 'numeric', 
       hour: 'numeric', 
@@ -79,7 +83,7 @@ export default function ChatScreen({ convoId }: ChatScreenProps) {
 
   return (
     <Box sx={{ height: 'calc(100vh - 100px)', display: 'flex', flexDirection: 'column', backgroundColor: 'white', borderRadius: '8px' }}>
-      {/* Top Bar */}
+      {/* Top Bar - Always visible */}
       <Box sx={{ 
         p: 1, 
         borderBottom: '1px solid #e0e0e0', 
@@ -98,29 +102,12 @@ export default function ChatScreen({ convoId }: ChatScreenProps) {
               mr: 2
             }}
           >
-            🤖
+            ��
           </Avatar>
           <Typography variant="h6" sx={{ fontWeight: '500', color: '#2d3436' }}>
             Chatbot
           </Typography>
         </Box>
-        
-        {/* User Avatar */}
-        {/* <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Avatar 
-            src="/user-image.svg"
-            sx={{ 
-              width: 32, 
-              height: 32,
-              backgroundColor: '#6c5ce7',
-              color: 'white',
-              fontSize: '12px',
-              fontWeight: 'bold'
-            }}
-          >
-            U
-          </Avatar>
-        </Box> */}
       </Box>
 
       {/* Messages Area */}
@@ -131,44 +118,68 @@ export default function ChatScreen({ convoId }: ChatScreenProps) {
         backgroundColor: 'white',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: loading ? 'center' : 'flex-start'
+        justifyContent: loading || isLoadingConversations ? 'center' : (messages.length === 0 && !convoId ? 'center' : 'flex-start')
       }}>
-        {loading ? (
+        {isLoadingConversations ? (
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+            <CircularProgress sx={{ color: '#9747FF', mb: 2 }} />
+            <Typography variant="body2" sx={{ color: '#636e72' }}>
+              Loading conversations...
+            </Typography>
+          </Box>
+        ) : loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <CircularProgress sx={{ color: '#a29bfe' }} />
+            <CircularProgress sx={{ color: '#9747FF' }} />
+          </Box>
+        ) : !convoId ? (
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            height: '100%'
+          }}>
+            <Typography variant="h6" sx={{ color: '#636e72', mb: 1 }}>
+              Welcome to Chatbot
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#636e72', textAlign: 'center' }}>
+              Select a conversation from the left to start chatting, or create a new one.
+            </Typography>
           </Box>
         ) : (
           <>
             {/* Centered timestamp */}
-            <Box sx={{ 
-              display: 'flex', 
-              justifyContent: 'center', 
-              alignItems: 'center',
-              mb: 2
-            }}>
-              <Typography 
-                variant="caption" 
-                sx={{ 
-                  color: '#636e72',
-                  fontSize: '11px',
-                  backgroundColor: '#f5f5f5',
-                  px: 1,
-                  py: 0.5,
-                  borderRadius: '8px'
-                }}
-              >
-                {messages.length > 0 && messages[0].createdAt ? formatTime(messages[0].createdAt) : ''}
-              </Typography>
-            </Box>
+            {messages.length > 0 && (
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center',
+                mb: 2
+              }}>
+                <Typography 
+                  variant="caption" 
+                  sx={{ 
+                    color: '#636e72',
+                    fontSize: '11px',
+                    backgroundColor: '#f5f5f5',
+                    px: 1,
+                    py: 0.5,
+                    borderRadius: '8px'
+                  }}
+                >
+                  {messages[0].createdAt ? formatTime(messages[0].createdAt) : ''}
+                </Typography>
+              </Box>
+            )}
 
             {messages.map((msg) => (
               <Box 
-                key={msg.id} 
+                key={msg.id}
                 sx={{ 
                   display: 'flex', 
                   justifyContent: msg.isFromUser ? 'flex-end' : 'flex-start',
                   mb: 2,
-                  alignItems: 'flex-end'
+                  alignItems: 'flex-start'
                 }}
               >
                 {!msg.isFromUser && (
@@ -176,64 +187,80 @@ export default function ChatScreen({ convoId }: ChatScreenProps) {
                     src="/chatbot-image.svg"
                     sx={{ 
                       width: 32, 
-                      height: 32,
-                      mr: 1
+                      height: 32, 
+                      mr: 1,
+                      mt: 0.5
                     }}
                   >
                     🤖
                   </Avatar>
                 )}
-                <Box sx={{ maxWidth: '70%' }}>
-                  <Box
-                    sx={{
-                      backgroundColor: msg.isFromUser ? '#625b72' : '#ECE6F0',
-                      color: msg.isFromUser ? 'white' : '#2d3436',
-                      borderRadius: '18px',
-                      px: 2,
-                      py: 1.5,
-                      fontSize: '14px',
-                      lineHeight: 1.4
-                    }}
-                  >
+                
+                <Box sx={{ 
+                  maxWidth: '70%',
+                  backgroundColor: msg.isFromUser ? '#625b72' : '#ECE6F0',
+                  color: msg.isFromUser ? 'white' : 'black',
+                  px: 2,
+                  py: 1,
+                  borderRadius: msg.isFromUser ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
+                  wordWrap: 'break-word'
+                }}>
+                  <Typography sx={{ fontSize: '14px', lineHeight: 1.4 }}>
                     {msg.content}
-                  </Box>
+                  </Typography>
                 </Box>
+
                 {msg.isFromUser && (
                   <Avatar 
                     src="/user-image.svg"
                     sx={{ 
                       width: 32, 
-                      height: 32,
+                      height: 32, 
                       ml: 1,
-                      backgroundColor: '#6c5ce7',
-                      color: 'white',
-                      fontSize: '14px',
-                      fontWeight: 'bold'
+                      mt: 0.5
                     }}
                   >
-                    U
+                    ��
                   </Avatar>
                 )}
               </Box>
             ))}
+
             {isTyping && (
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'flex-start',
+                mb: 2,
+                alignItems: 'flex-start'
+              }}>
                 <Avatar 
                   src="/chatbot-image.svg"
-                  sx={{ width: 32, height: 32, mr: 1 }}
+                  sx={{ 
+                    width: 32, 
+                    height: 32, 
+                    mr: 1,
+                    mt: 0.5
+                  }}
                 >
                   🤖
                 </Avatar>
-                <Box sx={{ backgroundColor: '#e9ecef', borderRadius: '18px', px: 2, py: 1.5 }}>
+                <Box sx={{ 
+                  backgroundColor: '#ECE6F0',
+                  px: 2,
+                  py: 1,
+                  borderRadius: '18px 18px 18px 4px',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}>
                   <Typography sx={{ color: '#636e72', fontSize: '16px' }}>
-                    ...
+                    ●●●
                   </Typography>
                 </Box>
               </Box>
             )}
+            <div ref={messagesEndRef} />
           </>
         )}
-        <div ref={messagesEndRef} />
       </Box>
 
       {/* Input Area */}
@@ -245,55 +272,45 @@ export default function ChatScreen({ convoId }: ChatScreenProps) {
         <Box sx={{ 
           display: 'flex', 
           alignItems: 'center',
-          backgroundColor: '#ECE6F0',
+          backgroundColor: input ? '#f7f2fb' : '#ECE6F0',
           borderRadius: '25px',
           px: 2,
-          py: 0
+          py: 0,
+          border: input ? '2px solid #000000' : '2px solid transparent',
+          transition: 'border 0.2s ease-in-out'
         }}>
           <TextField
             fullWidth
             placeholder="Reply to Chatbot"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            disabled={disabled || loading}
+            disabled={disabled || loading || !convoId || isLoadingConversations}
             onKeyPress={(e) => {
-              if (e.key === 'Enter') {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
                 sendMessage();
               }
             }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                border: 'none',
-                backgroundColor: '#ECE6F0',
-                '& fieldset': {
-                  border: 'none',
-                },
-                '&:hover': {
-                  backgroundColor: '#f7f2fb',
-                },
-                '&.Mui-focused': {
-                  backgroundColor: '#f7f2fb',
-                },
-              },
-              '& .MuiInputBase-input': {
+            variant="standard"
+            InputProps={{
+              disableUnderline: true,
+              sx: {
                 fontSize: '14px',
-                color: '#2d3436',
-                '&::placeholder': {
-                  color: '#636e72',
-                  opacity: 1
+                '& input': {
+                  padding: '12px 0',
                 }
               }
             }}
           />
           <IconButton 
             onClick={sendMessage} 
-            disabled={disabled || !input.trim() || loading}
+            disabled={disabled || !input.trim() || loading || !convoId || isLoadingConversations}
             sx={{ 
-              backgroundColor: input.trim() ? '#f7f2fb' : '#ECE6F0',
+              backgroundColor: input ? '#f7f2fb' : '#ECE6F0',
               color: '#2d3436',
               ml: 1,
               '&:hover': {
-                backgroundColor: '#f7f2fb',
+                backgroundColor: '#ddd6fe',
               },
               '&:disabled': {
                 backgroundColor: '#f0f0f0',

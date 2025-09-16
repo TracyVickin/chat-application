@@ -1,12 +1,13 @@
 'use client';
 
-import { Box, Typography, Avatar } from '@mui/material';
+import { Box, Typography, } from '@mui/material';
 import Conversations from './components/Conversations';
 import { useState } from 'react';
 import ChatScreen from './components/ChatScreen';
 
 export default function Home() {
   const [currentConvo, setCurrentConvo] = useState<string | null>(null);
+  const [isLoadingConversations, setIsLoadingConversations] = useState(true); // Start with true
 
   return (
     <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -56,7 +57,11 @@ export default function Home() {
           backgroundColor: '#fef7ff',
           marginTop: '20px' // Overlap with background color area
         }}>
-          <Conversations onSelect={setCurrentConvo} currentConvo={currentConvo} />
+          <Conversations 
+            onSelect={setCurrentConvo} 
+            currentConvo={currentConvo}
+            onLoadingChange={setIsLoadingConversations}
+          />
         </Box>
 
         {/* Right Side - Chat Screen */}
@@ -65,22 +70,10 @@ export default function Home() {
           marginTop: '10px', // Add margin to show background color
           marginBottom: '10px' // Add margin bottom to show background color
         }}>
-          {currentConvo ? (
-            <ChatScreen convoId={currentConvo} />
-          ) : (
-            <Box sx={{ 
-              height: '100%', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              backgroundColor: 'white',
-              borderRadius: '8px'
-            }}>
-              <Typography variant="h6" sx={{ color: '#636e72' }}>
-                Select a chat to start messaging
-              </Typography>
-            </Box>
-          )}
+          <ChatScreen 
+            convoId={currentConvo} 
+            isLoadingConversations={isLoadingConversations}
+          />
         </Box>
       </Box>
     </Box>

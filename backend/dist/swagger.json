@@ -1,0 +1,172 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Chat API",
+        "version": "1.0.0",
+        "description": "API for a simple chatbot application"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:3001",
+            "description": "Local development server"
+        }
+    ],
+    "paths": {
+        "/conversations": {
+            "get": {
+                "summary": "Get all conversations",
+                "responses": {
+                    "200": {
+                        "description": "A list of conversations with their messages",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": { "type": "string" },
+                                            "title": { "type": "string", "nullable": true },
+                                            "createdAt": { "type": "string", "format": "date-time" },
+                                            "messages": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": { "type": "string" },
+                                                        "content": { "type": "string" },
+                                                        "isFromUser": { "type": "boolean" },
+                                                        "createdAt": { "type": "string", "format": "date-time" },
+                                                        "conversationId": { "type": "string" }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Create a new conversation",
+                "responses": {
+                    "200": {
+                        "description": "Successfully created a new conversation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": { "type": "string" },
+                                        "title": { "type": "string", "nullable": true },
+                                        "createdAt": { "type": "string", "format": "date-time" }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/conversations/{id}": {
+            "delete": {
+                "summary": "Delete a conversation",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string" }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Conversation deleted successfully"
+                    }
+                }
+            }
+        },
+        "/conversations/{id}/messages": {
+            "get": {
+                "summary": "Get all messages for a conversation",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of messages for the specified conversation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": { "type": "string" },
+                                            "content": { "type": "string" },
+                                            "isFromUser": { "type": "boolean" },
+                                            "createdAt": { "type": "string", "format": "date-time" },
+                                            "conversationId": { "type": "string" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/messages": {
+            "post": {
+                "summary": "Send a new message",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "content": { "type": "string" },
+                                    "conversationId": { "type": "string", "format": "uuid" }
+                                },
+                                "required": ["content", "conversationId"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Message sent successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": { "type": "string" },
+                                        "content": { "type": "string" },
+                                        "isFromUser": { "type": "boolean" },
+                                        "createdAt": { "type": "string", "format": "date-time" },
+                                        "conversationId": { "type": "string" }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid data provided"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {}
+    }
+}

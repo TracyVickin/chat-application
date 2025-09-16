@@ -1,9 +1,10 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Box, Button, List, ListItem, ListItemText, IconButton, Typography, CircularProgress } from '@mui/material';
+import { Box, Button, IconButton, Typography, CircularProgress } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import axios from 'axios';
+import ConfirmModal from './ConfirmModal';
 
 interface Conversation {
   id: string;
@@ -13,11 +14,14 @@ interface Conversation {
 interface ConversationListProps {
   onSelect: (id: string | null) => void;
   currentConvo: string | null;
+  onLoadingChange?: (loading: boolean) => void;
 }
 
-export default function ConversationList({ onSelect, currentConvo }: ConversationListProps) {
+export default function ConversationList({ onSelect, currentConvo, onLoadingChange }: ConversationListProps) {
   const [convos, setConvos] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchConvos();
@@ -26,7 +30,14 @@ export default function ConversationList({ onSelect, currentConvo }: Conversatio
   const fetchConvos = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('http://localhost:3001/conversations');
+      onLoadingChange?.(true);
+      
+      // Add minimum loading time of 1.5 seconds
+      const [res] = await Promise.all([
+        axios.get('http://localhost:3001/conversations'),
+        new Promise(resolve => setTimeout(resolve, 1500))
+      ]);
+      
       setConvos(res.data);
       
       // Auto-select first conversation if none is selected and conversations exist
@@ -37,6 +48,7 @@ export default function ConversationList({ onSelect, currentConvo }: Conversatio
       console.error('Error fetching conversations:', error);
     } finally {
       setLoading(false);
+      onLoadingChange?.(false);
     }
   };
 
@@ -93,17 +105,17 @@ export default function ConversationList({ onSelect, currentConvo }: Conversatio
       </Box>
 
       {/* Conversations List */}
-      <Box sx={{ flex: 1, overflowY: 'auto', px: 2 }}>
+      <Box sx={{ flex: 1,  px: 2 }}>
         {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
-            <CircularProgress sx={{ color: '#a29bfe' }} />
+            <CircularProgress sx={{ color: '#9747FF' }} />
           </Box>
         ) : convos.length === 0 ? (
           <Box sx={{ p: 2, textAlign: 'center' }}>
             <Typography variant="body2" sx={{ color: '#636e72', mb: 2 }}>
-              No conversations yet
+              {/* No conversations yet */}
             </Typography>
-            <Button
+            {/* <Button
               variant="outlined"
               onClick={createNewConvo}
               sx={{
@@ -118,7 +130,7 @@ export default function ConversationList({ onSelect, currentConvo }: Conversatio
               }}
             >
               Start New Chat
-            </Button>
+            </Button> */}
           </Box>
         ) : (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -149,7 +161,8 @@ export default function ConversationList({ onSelect, currentConvo }: Conversatio
                   size="small"
                   onClick={(e) => {
                     e.stopPropagation();
-                    deleteConvo(convo.id);
+                    setPendingDeleteId(convo.id);
+                    setConfirmOpen(true);
                   }}
                   sx={{ 
                     position: 'absolute',
@@ -167,6 +180,27 @@ export default function ConversationList({ onSelect, currentConvo }: Conversatio
           </Box>
         )}
       </Box>
+      <ConfirmModal
+        open={confirmOpen}
+        title="Delete Conversation"
+        message={`Are you sure you want to delete ${(() => {
+          const idx = convos.findIndex(c => c.id === pendingDeleteId);
+          return idx >= 0 ? `Conversation ${idx + 1}?` : 'this conversation?';
+        })()}`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={async () => {
+          if (pendingDeleteId) {
+            await deleteConvo(pendingDeleteId);
+          }
+          setConfirmOpen(false);
+          setPendingDeleteId(null);
+        }}
+        onCancel={() => {
+          setConfirmOpen(false);
+          setPendingDeleteId(null);
+        }}
+      />
     </Box>
   );
 }
