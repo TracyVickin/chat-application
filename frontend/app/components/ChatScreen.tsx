@@ -1,7 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import { Box, TextField, IconButton, Typography, Avatar, CircularProgress } from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
 import axios from 'axios';
 
 interface Message {
@@ -55,10 +54,11 @@ export default function ChatScreen({ convoId, isLoadingConversations = false }: 
       fetchMessages();
       setIsTyping(true);
       
-      // Simulate bot response
-      setTimeout(() => {
+      // refetch after bot delay (~2s)
+      setTimeout(async () => {
+        await fetchMessages();
         setIsTyping(false);
-      }, 2000);
+      }, 2200);
     } catch (error) {
       console.error('Error sending message:', error);
     } finally {
@@ -82,7 +82,7 @@ export default function ChatScreen({ convoId, isLoadingConversations = false }: 
   };
 
   return (
-    <Box sx={{ height: 'calc(100vh - 100px)', display: 'flex', flexDirection: 'column', backgroundColor: 'white', borderRadius: '8px' }}>
+    <Box sx={{ height: 'calc(100vh - 100px)', display: 'flex',  flexDirection: 'column', backgroundColor: 'white', borderRadius: '8px', width: '1089px' }}>
       {/* Top Bar - Always visible */}
       <Box sx={{ 
         p: 1, 
@@ -318,7 +318,7 @@ export default function ChatScreen({ convoId, isLoadingConversations = false }: 
               }
             }}
           >
-            <SendIcon fontSize="small" />
+            <img src="/send.svg" alt="Send" style={{ width: 16, height: 16 }} />
           </IconButton>
         </Box>
       </Box>

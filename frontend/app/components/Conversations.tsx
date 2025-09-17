@@ -1,8 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { Box, Button, IconButton, Typography, CircularProgress } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
 import axios from 'axios';
 import ConfirmModal from './ConfirmModal';
 
@@ -80,12 +78,12 @@ export default function ConversationList({ onSelect, currentConvo, onLoadingChan
   };
 
   return (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', width: '313px', alignItems: 'center', justifyContent: 'center' }}>
       {/* New Chat Button */}
-      <Box sx={{ p: 2 }}>
+      <Box sx={{ p: 2, width: '100%' }}>
         <Button
           variant="contained"
-          startIcon={<AddIcon />}
+          startIcon={<img src="/add.svg" alt="Add" style={{ width: 18, height: 18 }} />}
           onClick={createNewConvo}
           sx={{
             backgroundColor: '#EADDFF',
@@ -93,8 +91,10 @@ export default function ConversationList({ onSelect, currentConvo, onLoadingChan
             borderRadius: '12px',
             textTransform: 'none',
             fontWeight: '500',
-            px: 15,
-            py: 1.5,
+            width: '100%',
+            height: '56px',
+            justifyContent: 'center',
+            px: 2,
             '&:hover': {
               backgroundColor: '#9c88ff',
             }
@@ -105,7 +105,7 @@ export default function ConversationList({ onSelect, currentConvo, onLoadingChan
       </Box>
 
       {/* Conversations List */}
-      <Box sx={{ flex: 1,  px: 2 }}>
+      <Box sx={{ flex: 1,  px: 2, width: '313px', }}>
         {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
             <CircularProgress sx={{ color: '#9747FF' }} />
@@ -133,7 +133,7 @@ export default function ConversationList({ onSelect, currentConvo, onLoadingChan
             </Button> */}
           </Box>
         ) : (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, }}>
             {convos.map((convo, index) => (
               <Box
                 key={convo.id}
@@ -141,7 +141,12 @@ export default function ConversationList({ onSelect, currentConvo, onLoadingChan
                   position: 'relative',
                   backgroundColor: currentConvo === convo.id ? '#E8DEF8' : '#EADDFF',
                   borderRadius: '12px',
-                  px: 15,
+                  width: '100%',
+                  height: '56px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start',
+                  px: 2,
                   py: 1.5,
                   cursor: 'pointer',
                   '&:hover': {
@@ -173,7 +178,7 @@ export default function ConversationList({ onSelect, currentConvo, onLoadingChan
                     '&:hover': { color: '#e17055' }
                   }}
                 >
-                  <DeleteIcon fontSize="small" />
+                  <img src="/delete.svg" alt="Delete" style={{ width: 16, height: 16 }} />
                 </IconButton>
               </Box>
             ))}

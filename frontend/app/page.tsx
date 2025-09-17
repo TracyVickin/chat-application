@@ -52,10 +52,10 @@ export default function Home() {
         padding: '10px'
       }}>
         {/* Left Sidebar - Conversations */}
-        <Box sx={{ 
-          width: '30%', 
+        <Box sx={{  
           backgroundColor: '#fef7ff',
-          marginTop: '20px' // Overlap with background color area
+          marginTop: '20px',
+          
         }}>
           <Conversations 
             onSelect={setCurrentConvo} 
