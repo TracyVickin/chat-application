@@ -1,13 +1,15 @@
 'use client';
 
-import { Box, Typography, } from '@mui/material';
+import { Box, Typography, Drawer, useMediaQuery } from '@mui/material';
 import Conversations from './components/Conversations';
 import { useState } from 'react';
 import ChatScreen from './components/ChatScreen';
 
 export default function Home() {
   const [currentConvo, setCurrentConvo] = useState<string | null>(null);
-  const [isLoadingConversations, setIsLoadingConversations] = useState(true); // Start with true
+  const [isLoadingConversations, setIsLoadingConversations] = useState(true); 
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const isMobile = useMediaQuery('(max-width: 900px)');
 
   return (
     <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -17,6 +19,7 @@ export default function Home() {
         borderBottom: '1px solid #e0e0e0', 
         display: 'flex', 
         alignItems: 'center',
+        justifyContent: 'space-between',
         backgroundColor: 'white',
         height: '60px'
       }}>
@@ -49,13 +52,16 @@ export default function Home() {
         display: 'flex', 
         flex: 1,
         backgroundColor: '#fef7ff',
-        padding: '10px'
+        padding: '10px',
+        gap: 2,
+        justifyContent: isMobile ? 'stretch' : 'center'
       }}>
         {/* Left Sidebar - Conversations */}
         <Box sx={{  
+          display: { xs: 'none', md: 'block' },
+          flex: '0 0 313px',
           backgroundColor: '#fef7ff',
           marginTop: '20px',
-          
         }}>
           <Conversations 
             onSelect={setCurrentConvo} 
@@ -66,16 +72,34 @@ export default function Home() {
 
         {/* Right Side - Chat Screen */}
         <Box sx={{ 
-          width: '68%',
-          marginTop: '10px', // Add margin to show background color
-          marginBottom: '10px' // Add margin bottom to show background color
+          flex: isMobile ? '1 1 auto' : '0 0 1039px',
+          marginTop: '10px', 
+          marginBottom: '10px' 
         }}>
           <ChatScreen 
             convoId={currentConvo} 
             isLoadingConversations={isLoadingConversations}
+            onOpenConversations={() => setMobileOpen(true)}
           />
         </Box>
       </Box>
+
+      {/* Mobile Drawer for Conversations */}
+      <Drawer
+        anchor="left"
+        open={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+        ModalProps={{ keepMounted: true }}
+        sx={{ display: { xs: 'block', md: 'none' } }}
+      >
+        <Box sx={{ width: 313, p: 1 }}>
+          <Conversations 
+            onSelect={(id) => { setCurrentConvo(id); setMobileOpen(false); }}
+            currentConvo={currentConvo}
+            onLoadingChange={setIsLoadingConversations}
+          />
+        </Box>
+      </Drawer>
     </Box>
   );
 }

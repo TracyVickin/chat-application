@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
 import swaggerUi from 'swagger-ui-express';
-import * as swaggerDocument from './swagger.json'; // We'll create this later
+import * as swaggerDocument from './swagger.json'; 
 import z from 'zod';
 
 const app = express();
@@ -80,9 +80,7 @@ app.post('/messages', async (req, res) => {
     },
   });
 
-  // Simulate bot response after 2 seconds (but since this is API, frontend handles delay)
-  // Note: Actual delay and typing animation is frontend-side; here we just prepare the response.
-  // But for simulation, we can add a setTimeout in API if needed, but better on frontend.
+   
 
   setTimeout(async () => {
     await prisma.message.create({
@@ -92,7 +90,7 @@ app.post('/messages', async (req, res) => {
         conversationId: data.conversationId,
       },
     });
-    // In real app, you'd emit via websockets, but for simplicity, frontend polls or refetches.
+    
   }, 2000);
 
   res.json(userMsg);

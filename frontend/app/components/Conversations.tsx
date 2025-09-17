@@ -30,7 +30,6 @@ export default function ConversationList({ onSelect, currentConvo, onLoadingChan
       setLoading(true);
       onLoadingChange?.(true);
       
-      // Add minimum loading time of 1.5 seconds
       const [res] = await Promise.all([
         axios.get('http://localhost:3001/conversations'),
         new Promise(resolve => setTimeout(resolve, 1500))
@@ -38,7 +37,6 @@ export default function ConversationList({ onSelect, currentConvo, onLoadingChan
       
       setConvos(res.data);
       
-      // Auto-select first conversation if none is selected and conversations exist
       if (res.data.length > 0 && !currentConvo) {
         onSelect(res.data[0].id);
       }
@@ -113,24 +111,7 @@ export default function ConversationList({ onSelect, currentConvo, onLoadingChan
         ) : convos.length === 0 ? (
           <Box sx={{ p: 2, textAlign: 'center' }}>
             <Typography variant="body2" sx={{ color: '#636e72', mb: 2 }}>
-              {/* No conversations yet */}
             </Typography>
-            {/* <Button
-              variant="outlined"
-              onClick={createNewConvo}
-              sx={{
-                borderColor: '#a29bfe',
-                color: '#6c5ce7',
-                borderRadius: '8px',
-                textTransform: 'none',
-                '&:hover': {
-                  borderColor: '#9c88ff',
-                  backgroundColor: '#f8f9fa'
-                }
-              }}
-            >
-              Start New Chat
-            </Button> */}
           </Box>
         ) : (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, }}>

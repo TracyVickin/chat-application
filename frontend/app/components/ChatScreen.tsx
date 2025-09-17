@@ -13,9 +13,10 @@ interface Message {
 interface ChatScreenProps {
   convoId: string | null;
   isLoadingConversations?: boolean;
+  onOpenConversations?: () => void;
 }
 
-export default function ChatScreen({ convoId, isLoadingConversations = false }: ChatScreenProps) {
+export default function ChatScreen({ convoId, isLoadingConversations = false, onOpenConversations }: ChatScreenProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -82,8 +83,8 @@ export default function ChatScreen({ convoId, isLoadingConversations = false }: 
   };
 
   return (
-    <Box sx={{ height: 'calc(100vh - 100px)', display: 'flex',  flexDirection: 'column', backgroundColor: 'white', borderRadius: '8px', width: '1089px' }}>
-      {/* Top Bar - Always visible */}
+    <Box sx={{ height: 'calc(100vh - 100px)', display: 'flex',  flexDirection: 'column', backgroundColor: 'white', borderRadius: '8px', width: { xs: '100%', md: '1089px' } }}>
+      {/* Top Bar  */}
       <Box sx={{ 
         p: 1, 
         borderBottom: '1px solid #e0e0e0', 
@@ -102,12 +103,19 @@ export default function ChatScreen({ convoId, isLoadingConversations = false }: 
               mr: 2
             }}
           >
-            ��
+            🤖
           </Avatar>
           <Typography variant="h6" sx={{ fontWeight: '500', color: '#2d3436' }}>
             Chatbot
           </Typography>
         </Box>
+        <IconButton
+          onClick={() => onOpenConversations?.()}
+          sx={{ display: { xs: 'inline-flex', md: 'none' } }}
+          aria-label="open conversations"
+        >
+          <img src="/hamburger.svg" alt="Open menu" style={{ width: 24, height: 24 }} />
+        </IconButton>
       </Box>
 
       {/* Messages Area */}
@@ -197,9 +205,10 @@ export default function ChatScreen({ convoId, isLoadingConversations = false }: 
                 )}
                 
                 <Box sx={{ 
-                  maxWidth: '70%',
+                  maxWidth: '310px',
                   backgroundColor: msg.isFromUser ? '#625b72' : '#ECE6F0',
                   color: msg.isFromUser ? 'white' : 'black',
+                  border: '3px solid #ECE6F0',
                   px: 2,
                   py: 1,
                   borderRadius: msg.isFromUser ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
@@ -231,7 +240,8 @@ export default function ChatScreen({ convoId, isLoadingConversations = false }: 
                 display: 'flex', 
                 justifyContent: 'flex-start',
                 mb: 2,
-                alignItems: 'flex-start'
+                alignItems: 'flex-start',
+                maxWidth: '310px'
               }}>
                 <Avatar 
                   src="/chatbot-image.svg"
@@ -301,6 +311,8 @@ export default function ChatScreen({ convoId, isLoadingConversations = false }: 
                 }
               }
             }}
+            multiline
+            maxRows={4}
           />
           <IconButton 
             onClick={sendMessage} 
