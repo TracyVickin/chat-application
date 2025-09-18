@@ -104,7 +104,7 @@ export default function ConversationList({ onSelect, currentConvo, onLoadingChan
             {convos.map((convo, index) => (
               <div
                 key={convo.id}
-                className={`relative bg-${currentConvo === convo.id ? '#E8DEF8' : '#EADDFF'} rounded-[12px] w-full h-[56px] flex items-center justify-start px-2 py-[6px] cursor-pointer hover:bg-${currentConvo === convo.id ? '#E8DEF8' : '#9c88ff'} transition-colors duration-200`}
+                className={`relative bg-${currentConvo === convo.id ? '#e9def8' : '#EADDFF'} rounded-[12px] w-full h-[56px] flex items-center justify-start px-2 py-[6px] cursor-pointer hover:bg-${currentConvo === convo.id ? '#9747FF' : '#9c88ff'} transition-colors duration-200`}
                 onClick={() => onSelect(convo.id)}
               >
                 <p
