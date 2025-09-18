@@ -4,7 +4,7 @@ generator client {
 }
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://postgres:mysecretpassword@localhost:5433/postgres"
+  url      = env("postgresql://chat_app_db_mqyv_user:TcUhPmUyfm6U7Kpq8WoENKGrn7SFOECH@dpg-d35uujbuibrs73dkppf0-a/chat_app_db_mqyv")
 }
 
 model Conversation {
