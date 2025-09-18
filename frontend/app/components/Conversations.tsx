@@ -1,6 +1,5 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Box, Button, IconButton, Typography, CircularProgress } from '@mui/material';
 import axios from 'axios';
 import ConfirmModal from './ConfirmModal';
 
@@ -21,6 +20,8 @@ export default function ConversationList({ onSelect, currentConvo, onLoadingChan
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
   useEffect(() => {
     fetchConvos();
   }, []);
@@ -31,7 +32,7 @@ export default function ConversationList({ onSelect, currentConvo, onLoadingChan
       onLoadingChange?.(true);
       
       const [res] = await Promise.all([
-        axios.get('http://localhost:3001/conversations'),
+        axios.get(`${API_URL}/conversations`),
         new Promise(resolve => setTimeout(resolve, 1500))
       ]);
       
@@ -50,7 +51,7 @@ export default function ConversationList({ onSelect, currentConvo, onLoadingChan
 
   const createNewConvo = async () => {
     try {
-      const res = await axios.post('http://localhost:3001/conversations');
+      const res = await axios.post(`${API_URL}/conversations`);
       setConvos(prev => [res.data, ...prev]);
       onSelect(res.data.id);
     } catch (error) {
@@ -60,7 +61,7 @@ export default function ConversationList({ onSelect, currentConvo, onLoadingChan
 
   const deleteConvo = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:3001/conversations/${id}`);
+      await axios.delete(`${API_URL}/conversations/${id}`);
       setConvos(prev => prev.filter(convo => convo.id !== id));
       if (currentConvo === id) {
         const remainingConvos = convos.filter(convo => convo.id !== id);
@@ -76,97 +77,56 @@ export default function ConversationList({ onSelect, currentConvo, onLoadingChan
   };
 
   return (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', width: '313px', alignItems: 'center', justifyContent: 'center' }}>
+    <div className="h-full flex flex-col w-[313px] items-center justify-center">
       {/* New Chat Button */}
-      <Box sx={{ p: 2, width: '100%' }}>
-        <Button
-          variant="contained"
-          startIcon={<img src="/add.svg" alt="Add" style={{ width: 18, height: 18 }} />}
+      <div className="p-2 w-full">
+        <button
           onClick={createNewConvo}
-          sx={{
-            backgroundColor: '#EADDFF',
-            color: 'black',
-            borderRadius: '12px',
-            textTransform: 'none',
-            fontWeight: '500',
-            width: '100%',
-            height: '56px',
-            justifyContent: 'center',
-            px: 2,
-            '&:hover': {
-              backgroundColor: '#9c88ff',
-            }
-          }}
+          className="bg-[#EADDFF] text-black rounded-[12px] text-left capitalize font-medium w-full h-[56px] flex items-center justify-center px-2 hover:bg-[#9c88ff] transition-colors duration-200"
         >
+          <img src="/add.svg" alt="Add" className="w-4 h-4 mr-2" />
           Conversations
-        </Button>
-      </Box>
+        </button>
+      </div>
 
       {/* Conversations List */}
-      <Box sx={{ flex: 1,  px: 2, width: '313px', }}>
+      <div className="flex-1 px-2 w-[313px]">
         {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
-            <CircularProgress sx={{ color: '#9747FF' }} />
-          </Box>
+          <div className="flex justify-center items-center h-[200px]">
+            <div className="w-8 h-8 border-4 border-[#9747FF] border-t-transparent rounded-full animate-spin"></div>
+          </div>
         ) : convos.length === 0 ? (
-          <Box sx={{ p: 2, textAlign: 'center' }}>
-            <Typography variant="body2" sx={{ color: '#636e72', mb: 2 }}>
-            </Typography>
-          </Box>
+          <div className="p-2 text-center">
+            <p className="text-[#636e72] mb-2"></p>
+          </div>
         ) : (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, }}>
+          <div className="flex flex-col gap-1">
             {convos.map((convo, index) => (
-              <Box
+              <div
                 key={convo.id}
-                sx={{
-                  position: 'relative',
-                  backgroundColor: currentConvo === convo.id ? '#E8DEF8' : '#EADDFF',
-                  borderRadius: '12px',
-                  width: '100%',
-                  height: '56px',
-                  
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'flex-start',
-                  px: 2,
-                  py: 1.5,
-                  cursor: 'pointer',
-                  '&:hover': {
-                    backgroundColor: currentConvo === convo.id ? '#E8DEF8' : '#9c88ff',
-                  }
-                }}
+                className={`relative bg-${currentConvo === convo.id ? '#E8DEF8' : '#EADDFF'} rounded-[12px] w-full h-[56px] flex items-center justify-start px-2 py-[6px] cursor-pointer hover:bg-${currentConvo === convo.id ? '#E8DEF8' : '#9c88ff'} transition-colors duration-200`}
                 onClick={() => onSelect(convo.id)}
               >
-                <Typography sx={{ 
-                  fontSize: '14px', 
-                  fontWeight: currentConvo === convo.id ? '500' : '400',
-                  color: 'black'
-                }}>
+                <p
+                  className={`text-[14px] ${currentConvo === convo.id ? 'font-medium' : 'font-normal'} text-black`}
+                >
                   {getConversationName(convo, index)}
-                </Typography>
-                <IconButton 
-                  size="small"
+                </p>
+                <button
                   onClick={(e) => {
                     e.stopPropagation();
                     setPendingDeleteId(convo.id);
                     setConfirmOpen(true);
                   }}
-                  sx={{ 
-                    position: 'absolute',
-                    right: 8,
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    color: '#636e72',
-                    '&:hover': { color: '#e17055' }
-                  }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[#636e72] hover:text-[#e17055] transition-colors duration-200"
                 >
-                  <img src="/delete.svg " alt="Delete" style={{ width: 16, height: 16 }} />
-                </IconButton>
-              </Box>
+                  <img src="/delete.svg" alt="Delete" className="w-4 h-4" />
+                </button>
+              </div>
             ))}
-          </Box>
+          </div>
         )}
-      </Box>
+      </div>
       <ConfirmModal
         open={confirmOpen}
         title="Delete Conversation"
@@ -188,6 +148,6 @@ export default function ConversationList({ onSelect, currentConvo, onLoadingChan
           setPendingDeleteId(null);
         }}
       />
-    </Box>
+    </div>
   );
 }
