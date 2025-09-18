@@ -24,6 +24,8 @@ export default function ChatScreen({ convoId, isLoadingConversations = false, on
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const API_URL = process.env.NEXT_PUBLIC_API_URL ;
+
   useEffect(() => {
     if (convoId) {
       fetchMessages();
@@ -36,7 +38,7 @@ export default function ChatScreen({ convoId, isLoadingConversations = false, on
   const fetchMessages = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`http://localhost:3001/conversations/${convoId}/messages`);
+      const res = await axios.get(`${API_URL}/conversations/${convoId}/messages`);
       setMessages(res.data);
       scrollToBottom();
     } catch (error) {
@@ -50,7 +52,7 @@ export default function ChatScreen({ convoId, isLoadingConversations = false, on
     if (!input.trim() || !convoId) return;
     setDisabled(true);
     try {
-      await axios.post('http://localhost:3001/messages', { content: input, conversationId: convoId });
+      await axios.post(`${API_URL}/messages`, { content: input, conversationId: convoId });
       setInput('');
       fetchMessages();
       setIsTyping(true);
@@ -284,6 +286,8 @@ export default function ChatScreen({ convoId, isLoadingConversations = false, on
           alignItems: 'center',
           backgroundColor: input ? '#f7f2fb' : '#ECE6F0',
           borderRadius: '25px',
+          width: '100%',
+          height: '56px',
           px: 2,
           py: 0,
           border: input ? '2px solid #000000' : '2px solid transparent',

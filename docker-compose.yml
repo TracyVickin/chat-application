@@ -1,3 +1,36 @@
+
+# services:
+#   db:
+#     image: postgres
+#     environment:
+#       POSTGRES_PASSWORD: mysecretpassword
+#     ports:
+#       - "5433:5432"
+
+#   backend:
+#     build: ./backend
+#     container_name: backend_app
+#     ports:
+#       - "3001:3001"
+#     depends_on:
+#       - db
+#     volumes:
+#       - ./backend:/app
+#       - /app/node_modules   # prevent overwriting node_modules in container
+
+#   frontend:
+#     build: ./frontend
+#     container_name: nextjs_app
+#     ports:
+#       - "3000:3000"
+#     depends_on:
+#       - backend
+#     volumes:
+#       - ./frontend:/app
+#       - /app/node_modules   # prevent overwriting node_modules in container
+
+
+
 services:
   db:
     image: postgres
@@ -5,19 +38,25 @@ services:
       POSTGRES_PASSWORD: mysecretpassword
     ports:
       - "5433:5432"
+
   backend:
     build: ./backend
+    container_name: backend_app
     ports:
       - "3001:3001"
     depends_on:
       - db
     volumes:
       - ./backend:/app
+      - /app/node_modules
+
   frontend:
     build: ./frontend
+    container_name: nextjs_app
     ports:
       - "3000:3000"
     depends_on:
       - backend
     volumes:
       - ./frontend:/app
+      - /app/node_modules

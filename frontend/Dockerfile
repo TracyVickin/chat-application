@@ -1,11 +1,16 @@
-FROM node:18
+FROM node:20-alpine
 
 WORKDIR /app
 
+# Copy both package.json and node_modules from local
 COPY package*.json ./
-RUN npm ci  # Clean install
-RUN rm -rf node_modules/.cache  # Force redownload of binaries
+RUN npm install
 
+# Copy the rest of the application code
 COPY . .
 
-CMD ["npm", "run", "dev"]
+# Build the app (if needed)
+RUN npm run build
+
+EXPOSE 3000
+CMD ["npm", "run", "start"]

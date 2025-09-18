@@ -124,6 +124,7 @@ export default function ConversationList({ onSelect, currentConvo, onLoadingChan
                   borderRadius: '12px',
                   width: '100%',
                   height: '56px',
+                  
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'flex-start',
@@ -159,7 +160,7 @@ export default function ConversationList({ onSelect, currentConvo, onLoadingChan
                     '&:hover': { color: '#e17055' }
                   }}
                 >
-                  <img src="/delete.svg" alt="Delete" style={{ width: 16, height: 16 }} />
+                  <img src="/delete.svg " alt="Delete" style={{ width: 16, height: 16 }} />
                 </IconButton>
               </Box>
             ))}

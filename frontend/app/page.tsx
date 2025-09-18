@@ -12,7 +12,7 @@ export default function Home() {
   const isMobile = useMediaQuery('(max-width: 900px)');
 
   return (
-    <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ height: '100vh', width:'100wv', display: 'flex', flexDirection: 'column' }}>
       {/* Unified Header */}
       <Box sx={{ 
         p: 2, 

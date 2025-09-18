@@ -4,7 +4,7 @@ generator client {
 }
 datasource db {
   provider = "postgresql"
-  url      = env("postgresql://chat_app_db_mqyv_user:TcUhPmUyfm6U7Kpq8WoENKGrn7SFOECH@dpg-d35uujbuibrs73dkppf0-a/chat_app_db_mqyv")
+  url      = env("DATABASE_URL")
 }
 
 model Conversation {
