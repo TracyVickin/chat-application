@@ -40,8 +40,7 @@ chat-application/
 ├── docker-compose.yml # Multi-container setup
 └── README.md # This file
 
-
-##  Tech Stack
+## Tech Stack
 
 ### Backend
 - **Node.js** with **Express.js** - Web server framework
@@ -74,98 +73,97 @@ Before running this project, make sure you have the following installed:
 ### Full Docker Setup
 
 1. **Clone and start all services**
-   ```bash
    git clone <repository-url>
    cd chat-application
    docker-compose up --build
-   ```
 
-2. **Access the application**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:3001
+Access the application
 
-##  Manual Setup (Without Docker)
+Frontend: http://localhost:3000
+Backend API: http://localhost:3001
 
-### Database Setup
 
-1. **Install PostgreSQL** and create a database
-2. **Update the database URL** in `backend/prisma/schema.prisma`:
-   ```prisma
-   datasource db {
-     provider = "postgresql"
-     url      = "postgresql://username:password@localhost:5432/your_database_name"
-   }
-   ```
 
-### Backend Setup
+Manual Setup (Without Docker)
+Database Setup
 
-1. **Navigate to backend directory**
-   ```bash
-   cd backend
-   ```
+Install PostgreSQL and create a database
+Update the database URL in backend/prisma/schema.prisma:
+prismadatasource db {
+  provider = "postgresql"
+  url      = "postgresql://username:password@localhost:5432/your_database_name"
+}
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
 
-3. **Set up the database**
-   ```bash
-   npx prisma generate
-   npx prisma migrate dev
-   ```
+Backend Setup
 
-4. **Start the development server**
-   ```bash
-   npm run dev
-   ```
+Navigate to backend directory
+cd backend
 
-### Frontend Setup
+Install dependencies
+npm install
 
-1. **Navigate to frontend directory**
-   ```bash
-   cd frontend
-   ```
+Set up the database
+npx prisma generate
+npx prisma migrate dev
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+Start the development server
+npm run dev
 
-3. **Start the development server**
-   ```bash
-   npm run dev
-   ```
 
-## API Endpoints
+Frontend Setup
 
-### Conversations
-- `GET /conversations` - Get all conversations
-- `POST /conversations` - Create a new conversation
-- `DELETE /conversations/:id` - Delete a conversation
+Navigate to frontend directory
+cd frontend
 
-### Messages
-- `GET /conversations/:id/messages` - Get messages for a conversation
-- `POST /messages` - Send a new message
+Install dependencies
+npm install
 
-### Documentation
-- `GET /api-docs` - Swagger UI documentation
+Start the development server
+npm run dev
 
-## Database Schema
 
-### Conversation Model
-```prisma
-model Conversation {
+Environment Variables
+To configure the application, create .env or .env.local files in the respective directories with the following variables:
+Frontend (in frontend/)
+Create a .env.local file (not tracked by Git):
+envNEXT_PUBLIC_API_URL=http://localhost:3001
+
+
+NEXT_PUBLIC_API_URL: The base URL of the backend API. Set to http://localhost:3001 for local development. For production, update to the deployed backend URL (e.g., https://chat-app-backend-tshu.onrender.com).
+
+Backend (in backend/)
+Create a .env file (not tracked by Git):
+envDATABASE_URL=postgresql://username:password@localhost:5432/your_database_name?sslmode=require
+
+DATABASE_URL: The connection string for your PostgreSQL database. Replace username, password, and your_database_name with your actual PostgreSQL credentials and database name. The ?sslmode=require parameter ensures secure connections.
+
+API Endpoints
+Conversations
+
+GET /conversations - Get all conversations
+POST /conversations - Create a new conversation
+DELETE /conversations/:id - Delete a conversation
+
+Messages
+
+GET /conversations/:id/messages - Get messages for a conversation
+POST /messages - Send a new message
+
+Documentation
+
+GET /api-docs - Swagger UI documentation
+
+Database Schema
+Conversation Model
+prismamodel Conversation {
   id        String    @id @default(uuid())
   title     String?   // Optional title
   createdAt DateTime  @default(now())
   messages  Message[]
 }
-```
-
-### Message Model
-```prisma
-model Message {
+Message Model
+prismamodel Message {
   id             String       @id @default(uuid())
   content        String
   isFromUser     Boolean      // True if user, False if bot
@@ -173,118 +171,104 @@ model Message {
   conversationId String
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 }
-```
+UI Components
+ChatScreen
 
-##  UI Components
+Main chat interface with message display
+Input field with send functionality
+User and bot message differentiation
+Loading states and typing indicators
 
-### ChatScreen
-- Main chat interface with message display
-- Input field with send functionality
-- User and bot message differentiation
-- Loading states and typing indicators
+Conversations
 
-### Conversations
-- Sidebar with conversation list
-- Create new conversation button
-- Delete conversation with confirmation modal
-- Auto-selection of first conversation
+Sidebar with conversation list
+Create new conversation button
+Delete conversation with confirmation modal
+Auto-selection of first conversation
 
-### ConfirmModal
-- Reusable confirmation dialog
-- Customizable title, message, and button text
-- Material-UI styling with custom colors
+ConfirmModal
 
-## Development Scripts
+Reusable confirmation dialog
+Customizable title, message, and button text
+Material-UI styling with custom colors
 
-### Backend
-```bash
+Development Scripts
+Backend
 npm run dev      # Start development server with hot reload
 npm run build    # Build for production
 npm run start    # Start production server
-```
-
-### Frontend
-```bash
+Frontend
 npm run dev      # Start development server
 npm run build    # Build for production
 npm run start    # Start production server
 npm run lint     # Run ESLint
-```
-
-## Docker Configuration
-
+Docker Configuration
 The project includes Docker configuration for easy deployment:
 
-- **Backend Dockerfile**: Node.js with TypeScript support
-- **Frontend Dockerfile**: Next.js production build
-- **Docker Compose**: Multi-container orchestration with PostgreSQL
+Backend Dockerfile: Node.js with TypeScript support
+Frontend Dockerfile: Next.js production build
+Docker Compose: Multi-container orchestration with PostgreSQL
 
-## Deployment
+Deployment
+Production Build
 
-### Production Build
+Build the frontend
+cd frontend
+npm run build
 
-1. **Build the frontend**
-   ```bash
-   cd frontend
-   npm run build
-   ```
+Build the backend
+cd backend
+npm run build
 
-2. **Build the backend**
-   ```bash
-   cd backend
-   npm run build
-   ```
+Start production servers
+# Backend
+cd backend && npm start
 
-3. **Start production servers**
-   ```bash
-   # Backend
-   cd backend && npm start
-   
-   # Frontend
-   cd frontend && npm start
-   ```
+# Frontend
+cd frontend && npm start
 
-### Environment Variables
 
-Create a `.env` file in the backend directory:
-```env
-DATABASE_URL="postgresql://username:password@localhost:5433/postgres"
-```
+Environment Variables
+To configure the application for production, ensure the environment variables are set as described in the "Manual Setup" section above. For deployment platforms (e.g., Render, Vercel), add these variables in the respective dashboard settings:
 
-## Contributing
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit your changes: `git commit -m 'Add some amazing feature'`
-4. Push to the branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
-- Follow TypeScript and ESLint rules
-- Add tests if applicable
-- Update documentation as needed
+Frontend: NEXT_PUBLIC_API_URL (e.g., https://chat-app-backend.com).
+Backend: DATABASE_URL (your PostgreSQL connection string, e.g., postgresql://username:password@host:port/dbname?sslmode=require).
 
-### Common Issues
+Contributing
 
-1. **Database Connection Error**
-   - Ensure PostgreSQL is running
-   - Check database credentials in `schema.prisma`
-   - Run `npx prisma migrate dev` to apply migrations
+Fork the repository
+Create a feature branch: git checkout -b feature/amazing-feature
+Commit your changes: git commit -m 'Add some amazing feature'
+Push to the branch: git push origin feature/amazing-feature
+Open a Pull Request
 
-2. **CORS Issues**
-   - Verify backend CORS configuration
-   - Check if frontend and backend are running on correct ports
 
-3. **Port Already in Use**
-   - Change ports in `package.json` scripts or Docker configuration
-   - Kill existing processes using the ports
+Follow TypeScript and ESLint rules
+Add tests if applicable
+Update documentation as needed
 
-4. **TypeScript Errors**
-   - Run `npm install` in both frontend and backend directories
-   - Check TypeScript configuration files
+Common Issues
 
-### Getting Help
+Database Connection Error
 
-If you encounter any issues:
-1. Check the console for error messages
-2. Verify all dependencies are installed
-3. Ensure all services are running
-4. Check the API documentation at `/api-docs`
+Ensure PostgreSQL is running
+Check database credentials in schema.prisma or DATABASE_URL
+Run npx prisma migrate dev to apply migrations
 
+
+CORS Issues
+
+Verify backend CORS configuration
+Check if frontend and backend are running on correct ports
+
+
+Port Already in Use
+
+Change ports in package.json scripts or Docker configuration
+Kill existing processes using the ports
+
+
+TypeScript Errors
+
+Run npm install in both frontend and backend directories
+Check TypeScript configuration files

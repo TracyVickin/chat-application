@@ -1,31 +1,23 @@
-# FROM node:18
-
-# WORKDIR /app
-
-# COPY package*.json ./
-# RUN npm install
-
-# COPY . .
-
-# CMD ["npm", "run", "dev"]
-
-
-# Backend Dockerfile
-
-# Use Node.js LTS
-FROM node:18-bullseye
+FROM node:18-alpine
 
 # Create app directory
 WORKDIR /app
 
-# Copy package.json and lock file
+# Copy only package files + prisma schema first
 COPY package*.json ./
+COPY prisma ./prisma
+
+# Skip Prisma generate during install (handled later)
+ENV PRISMA_SKIP_POSTINSTALL_GENERATE=true
 
 # Install dependencies
 RUN npm install
 
 # Copy the rest of the backend code
 COPY . .
+
+# Generate Prisma client (after schema is present)
+RUN npx prisma generate
 
 # Build TypeScript
 RUN npm run build
