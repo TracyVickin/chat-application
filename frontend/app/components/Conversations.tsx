@@ -103,26 +103,27 @@ export default function ConversationList({ onSelect, currentConvo, onLoadingChan
           <div className="flex flex-col gap-1">
             {convos.map((convo, index) => (
               <div
-                key={convo.id}
-                className={`relative bg-${currentConvo === convo.id ? '#E8DEF8' : '#EADDFF'} rounded-[12px] w-full h-[56px] flex items-center justify-start px-2 py-[6px] cursor-pointer hover:bg-${currentConvo === convo.id ? '#E8DEF8' : '#9c88ff'} transition-colors duration-200`}
-                onClick={() => onSelect(convo.id)}
+              key={convo.id}
+              style={{ backgroundColor: currentConvo === convo.id ? '#E8DEF8' : '#EADDFF' }}
+              className={`relative rounded-[12px] w-full h-[56px] flex items-center justify-start px-2 py-[6px] cursor-pointer hover:bg-${currentConvo === convo.id ? '#E8DEF8' : '#9c88ff'} transition-colors duration-200`}
+              onClick={() => onSelect(convo.id)}
+            >
+              <p
+                className={`text-[14px] ${currentConvo === convo.id ? 'font-medium' : 'font-normal'} text-black`}
               >
-                <p
-                  className={`text-[14px] ${currentConvo === convo.id ? 'font-medium' : 'font-normal'} text-black`}
-                >
-                  {getConversationName(convo, index)}
-                </p>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setPendingDeleteId(convo.id);
-                    setConfirmOpen(true);
-                  }}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[#636e72] hover:text-[#e17055] transition-colors duration-200"
-                >
-                  <img src="/delete.svg" alt="Delete" className="w-4 h-4" />
-                </button>
-              </div>
+                {getConversationName(convo, index)}
+              </p>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setPendingDeleteId(convo.id);
+                  setConfirmOpen(true);
+                }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-[#636e72] hover:text-[#e17055] transition-colors duration-200"
+              >
+                <img src="/delete.svg" alt="Delete" className="w-4 h-4" />
+              </button>
+            </div>
             ))}
           </div>
         )}
