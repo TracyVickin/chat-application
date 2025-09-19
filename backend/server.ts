@@ -10,7 +10,7 @@ const prisma = new PrismaClient();
 
 // Enable CORS for all routes
 app.use(cors({
-  origin: 'http://localhost:3000', // Frontend URL
+  origin: 'https://chat-application-teal-kappa.vercel.app', // Frontend URL
   credentials: true
 }));
 
