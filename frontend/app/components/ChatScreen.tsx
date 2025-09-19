@@ -24,7 +24,7 @@ export default function ChatScreen({ convoId, isLoadingConversations = false, on
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL ;
 
   useEffect(() => {
     if (convoId) {
@@ -57,6 +57,7 @@ export default function ChatScreen({ convoId, isLoadingConversations = false, on
       fetchMessages();
       setIsTyping(true);
       
+      // refetch after bot delay (~2s)
       setTimeout(async () => {
         await fetchMessages();
         setIsTyping(false);
@@ -84,13 +85,25 @@ export default function ChatScreen({ convoId, isLoadingConversations = false, on
   };
 
   return (
-    <Box sx={{ height: 'calc(100vh - 100px)', display: 'flex', flexDirection: 'column', backgroundColor: 'white', borderRadius: '8px', width: '100%' }}>
-      {/* Top Bar */}
-      <Box sx={{ p: 1, borderBottom: '1px solid #e0e0e0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'white', borderRadius: '8px 8px 0 0' }}>
+    <Box sx={{ height: 'calc(100vh - 100px)', display: 'flex',  flexDirection: 'column', backgroundColor: 'white', borderRadius: '8px', width: { xs: '100%', md: '1089px' } }}>
+      {/* Top Bar  */}
+      <Box sx={{ 
+        p: 1, 
+        borderBottom: '1px solid #e0e0e0', 
+        display: 'flex', 
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        backgroundColor: 'white',
+        borderRadius: '8px 8px 0 0'
+      }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Avatar 
             src="/chatbot-image.svg"
-            sx={{ width: 40, height: 40, mr: 2 }}
+            sx={{ 
+              width: 40, 
+              height: 40,
+              mr: 2
+            }}
           >
             🤖
           </Avatar>
@@ -108,7 +121,15 @@ export default function ChatScreen({ convoId, isLoadingConversations = false, on
       </Box>
 
       {/* Messages Area */}
-      <Box sx={{ flex: 1, overflowY: 'auto', p: 2, backgroundColor: 'white', display: 'flex', flexDirection: 'column', justifyContent: loading || isLoadingConversations ? 'center' : (messages.length === 0 && !convoId ? 'center' : 'flex-start') }}>
+      <Box sx={{ 
+        flex: 1, 
+        overflowY: 'auto', 
+        p: 2,
+        backgroundColor: 'white',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: loading || isLoadingConversations ? 'center' : (messages.length === 0 && !convoId ? 'center' : 'flex-start')
+      }}>
         {isLoadingConversations ? (
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
             <CircularProgress sx={{ color: '#9747FF', mb: 2 }} />
@@ -121,7 +142,13 @@ export default function ChatScreen({ convoId, isLoadingConversations = false, on
             <CircularProgress sx={{ color: '#9747FF' }} />
           </Box>
         ) : !convoId ? (
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            height: '100%'
+          }}>
             <Typography variant="h6" sx={{ color: '#636e72', mb: 1 }}>
               Welcome to Chatbot
             </Typography>
@@ -131,11 +158,24 @@ export default function ChatScreen({ convoId, isLoadingConversations = false, on
           </Box>
         ) : (
           <>
+            {/* Centered timestamp */}
             {messages.length > 0 && (
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mb: 2 }}>
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center',
+                mb: 2
+              }}>
                 <Typography 
                   variant="caption" 
-                  sx={{ color: '#636e72', fontSize: '11px', backgroundColor: '#f5f5f5', px: 1, py: 0.5, borderRadius: '8px' }}
+                  sx={{ 
+                    color: '#636e72',
+                    fontSize: '11px',
+                    backgroundColor: '#f5f5f5',
+                    px: 1,
+                    py: 0.5,
+                    borderRadius: '8px'
+                  }}
                 >
                   {messages[0].createdAt ? formatTime(messages[0].createdAt) : ''}
                 </Typography>
@@ -145,18 +185,37 @@ export default function ChatScreen({ convoId, isLoadingConversations = false, on
             {messages.map((msg) => (
               <Box 
                 key={msg.id}
-                sx={{ display: 'flex', justifyContent: msg.isFromUser ? 'flex-end' : 'flex-start', mb: 2, alignItems: 'flex-start' }}
+                sx={{ 
+                  display: 'flex', 
+                  justifyContent: msg.isFromUser ? 'flex-end' : 'flex-start',
+                  mb: 2,
+                  alignItems: 'flex-start'
+                }}
               >
                 {!msg.isFromUser && (
                   <Avatar 
                     src="/chatbot-image.svg"
-                    sx={{ width: 32, height: 32, mr: 1, mt: 0.5 }}
+                    sx={{ 
+                      width: 32, 
+                      height: 32, 
+                      mr: 1,
+                      mt: 0.5
+                    }}
                   >
                     🤖
                   </Avatar>
                 )}
                 
-                <Box sx={{ maxWidth: '310px', backgroundColor: msg.isFromUser ? '#625b72' : '#ECE6F0', color: msg.isFromUser ? 'white' : 'black', border: '3px solid #ECE6F0', px: 2, py: 1, borderRadius: msg.isFromUser ? '18px 18px 4px 18px' : '18px 18px 18px 4px', wordWrap: 'break-word' }}>
+                <Box sx={{ 
+                  maxWidth: '310px',
+                  backgroundColor: msg.isFromUser ? '#625b72' : '#ECE6F0',
+                  color: msg.isFromUser ? 'white' : 'black',
+                  border: '3px solid #ECE6F0',
+                  px: 2,
+                  py: 1,
+                  borderRadius: msg.isFromUser ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
+                  wordWrap: 'break-word'
+                }}>
                   <Typography sx={{ fontSize: '14px', lineHeight: 1.4 }}>
                     {msg.content}
                   </Typography>
@@ -165,23 +224,46 @@ export default function ChatScreen({ convoId, isLoadingConversations = false, on
                 {msg.isFromUser && (
                   <Avatar 
                     src="/user-image.svg"
-                    sx={{ width: 32, height: 32, ml: 1, mt: 0.5 }}
+                    sx={{ 
+                      width: 32, 
+                      height: 32, 
+                      ml: 1,
+                      mt: 0.5
+                    }}
                   >
-                    👤
+                    ��
                   </Avatar>
                 )}
               </Box>
             ))}
 
             {isTyping && (
-              <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2, alignItems: 'flex-start', maxWidth: '310px' }}>
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'flex-start',
+                mb: 2,
+                alignItems: 'flex-start',
+                maxWidth: '310px'
+              }}>
                 <Avatar 
                   src="/chatbot-image.svg"
-                  sx={{ width: 32, height: 32, mr: 1, mt: 0.5 }}
+                  sx={{ 
+                    width: 32, 
+                    height: 32, 
+                    mr: 1,
+                    mt: 0.5
+                  }}
                 >
                   🤖
                 </Avatar>
-                <Box sx={{ backgroundColor: '#ECE6F0', px: 2, py: 1, borderRadius: '18px 18px 18px 4px', display: 'flex', alignItems: 'center' }}>
+                <Box sx={{ 
+                  backgroundColor: '#ECE6F0',
+                  px: 2,
+                  py: 1,
+                  borderRadius: '18px 18px 18px 4px',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}>
                   <Typography sx={{ color: '#636e72', fontSize: '16px' }}>
                     ●●●
                   </Typography>
@@ -194,8 +276,23 @@ export default function ChatScreen({ convoId, isLoadingConversations = false, on
       </Box>
 
       {/* Input Area */}
-      <Box sx={{ p: 2, backgroundColor: 'white', borderRadius: '0 0 8px 8px' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', backgroundColor: input ? '#f7f2fb' : '#ECE6F0', borderRadius: '25px', width: '100%', height: '56px', px: 2, py: 0, border: input ? '2px solid #000000' : '2px solid transparent', transition: 'border 0.2s ease-in-out' }}>
+      <Box sx={{ 
+        p: 2, 
+        backgroundColor: 'white',
+        borderRadius: '0 0 8px 8px'
+      }}>
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center',
+          backgroundColor: input ? '#f7f2fb' : '#ECE6F0',
+          borderRadius: '25px',
+          width: '100%',
+          height: '56px',
+          px: 2,
+          py: 0,
+          border: input ? '2px solid #000000' : '2px solid transparent',
+          transition: 'border 0.2s ease-in-out'
+        }}>
           <TextField
             fullWidth
             placeholder="Reply to Chatbot"
@@ -215,7 +312,6 @@ export default function ChatScreen({ convoId, isLoadingConversations = false, on
                 fontSize: '14px',
                 '& input': {
                   padding: '12px 0',
-                  width: '100%', 
                 }
               }
             }}
@@ -225,7 +321,18 @@ export default function ChatScreen({ convoId, isLoadingConversations = false, on
           <IconButton 
             onClick={sendMessage} 
             disabled={disabled || !input.trim() || loading || !convoId || isLoadingConversations}
-            sx={{ backgroundColor: input ? '#f7f2fb' : '#ECE6F0', color: '#2d3436', ml: 1, '&:hover': { backgroundColor: '#ddd6fe' }, '&:disabled': { backgroundColor: '#f0f0f0', color: '#a29bfe' } }}
+            sx={{ 
+              backgroundColor: input ? '#f7f2fb' : '#ECE6F0',
+              color: '#2d3436',
+              ml: 1,
+              '&:hover': {
+                backgroundColor: '#ddd6fe',
+              },
+              '&:disabled': {
+                backgroundColor: '#f0f0f0',
+                color: '#a29bfe'
+              }
+            }}
           >
             <img src="/send.svg" alt="Send" style={{ width: 16, height: 16 }} />
           </IconButton>
